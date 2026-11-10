@@ -76,7 +76,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # 1. Fetch all release tags safely using JSON and delete them
+        # Delete every GitHub release (tag names are read from JSON output)
         RELEASES=$(gh release list --limit 1000 --json tagName -q '.[].tagName')
         for release in $RELEASES; do
           if [ -n "$release" ]; then
@@ -85,7 +85,7 @@ jobs:
           fi
         done
         
-        # 2. Find ALL tags on the remote and delete them
+        # Delete all tags on the remote
         REMOTE_TAGS=$(git ls-remote --tags --refs origin | awk -F/ '{print $3}')
         for tag in $REMOTE_TAGS; do
           if [ -n "$tag" ]; then
@@ -94,7 +94,7 @@ jobs:
           fi
         done
         
-        # 3. Find ALL local tags in the runner's workspace and delete them
+        # Delete all local tags in the runner's workspace
         LOCAL_TAGS=$(git tag)
         for tag in $LOCAL_TAGS; do
           if [ -n "$tag" ]; then
@@ -107,7 +107,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # Upload the zip file as v1.0 and explicitly target the current commit SHA
+        # Publish the zip as release v1.0, pinned to the current commit SHA
         gh release create "v1.0" ZeusBotAI-1.0.zip \
           --title "Zeus Bot AI v1.0" \
           --notes "Automated release of Zeus Bot AI version 1.0." \
